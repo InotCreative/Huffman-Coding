@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "dynamic_array.h"
-#include "file_read.h"
+#include "file_handle.h"
 #include "huffman.h"
 
 int main(int argc, char const *argv[]) {
@@ -8,12 +8,12 @@ int main(int argc, char const *argv[]) {
     //BinaryTreeNode *huffmanTree = NULL;;
 
     initDynamicArray(&array);
-    countFileCharacters(&array, "test.txt");
-    array.printArray(&array);
+    
+    BinaryTreeNode *root = buildHuffmanTree(&root, &array, "test.txt");
 
-    pop(&array, 0);
-    array.printArray(&array);
+    printNode(root);
 
+    array.printArray(&array);
     array.freeArray(&array);
     
     return 0;

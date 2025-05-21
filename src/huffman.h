@@ -2,7 +2,8 @@
 #define HUFFMAN_H
 
 #include "dynamic_array.h"
-#include "file_read.h"
+#include "file_handle.h"
+#include <stdbool.h>
 
 typedef struct BinaryTreeNode {
     LetterNode *node;
@@ -11,7 +12,14 @@ typedef struct BinaryTreeNode {
     struct BinaryTreeNode *right;
 } BinaryTreeNode;
 
-void init(BinaryTreeNode *tree);
-void buildHuffmanTree(BinaryTreeNode **tree, DynamicArray *array, const char *filePath);
+typedef struct HuffmanCodebook {
+    BinaryTreeNode *node;
+    DynamicArray *array;
+} HuffmanCodebook;
+
+BinaryTreeNode *buildHuffmanTree(BinaryTreeNode **tree, DynamicArray *array, const char *filePath);
+void generateHuffmanCode(BinaryTreeNode **tree, DynamicArray *array);
+void freeHuffmanTree(BinaryTreeNode *tree);
+void printNode(BinaryTreeNode *root);
 
 #endif

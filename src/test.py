@@ -40,11 +40,11 @@ def build_huffman_tree(char_counts):
 
 # Example usage:
 char_counts = [
-    ('L', 1), ('U', 1), ('D', 1), ('h', 1), ('E', 1),
-    ('g', 3), ('b', 3), (' ', 3), ('v', 3), ('x', 3), ('f', 3),
-    ('.', 4), (',', 4), ('q', 5), ('p', 11), ('c', 16), ('m', 17),
-    ('s', 18), ('d', 18), ('l', 21), ('r', 22), ('n', 24), ('u', 28),
-    ('a', 29), ('o', 29), ('t', 32), ('e', 37), ('i', 42), (' ', 65)
+    ('L', 1), ('o', 29), ('r', 22), ('e', 37), ('m', 17), (' ', 65),
+    ('i', 42), ('p', 11), ('s', 18), ('u', 28), ('d', 18), ('l', 21),
+    ('t', 32), ('a', 29), (',', 4), ('c', 16), ('n', 24), ('g', 3),
+    ('b', 3), ('q', 5), ('.', 4), ('\n', 4), ('U', 1), ('v', 3), ('x', 3),
+    ('D', 1), ('h', 1), ('f', 3), ('E', 1)
 ]
 
 root = build_huffman_tree(char_counts)
@@ -59,6 +59,8 @@ def print_node(node):
     else:
         print(f"Root node: Leaf node with character = '{node.char}' and count = {node.count}")
 
+print_node(root)
+'''
 # Assuming 'root' is the tree root from the previous code:
 def generate_codes(node, prefix="", codebook=None):
     if codebook is None:
@@ -84,3 +86,4 @@ for char, code in codes.items():
         print(f"'space': {code}")
     else:
         print(f"'{char}': {code}")
+'''

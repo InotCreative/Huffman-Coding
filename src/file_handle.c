@@ -1,4 +1,4 @@
-#include "file_read.h"
+#include "file_handle.h"
 
 void countFileCharacters(DynamicArray *array, const char *filePath) {
     FILE *inputFile = fopen("test.txt", "r+");
