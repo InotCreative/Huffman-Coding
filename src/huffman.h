@@ -12,14 +12,13 @@ typedef struct BinaryTreeNode {
     struct BinaryTreeNode *right;
 } BinaryTreeNode;
 
-typedef struct HuffmanCodebook {
-    BinaryTreeNode *node;
-    DynamicArray *array;
-} HuffmanCodebook;
+typedef struct HuffmanCode {
+    char letter;
+    char code[1024];
+} HuffmanCode;
 
-BinaryTreeNode *buildHuffmanTree(BinaryTreeNode **tree, DynamicArray *array, const char *filePath);
-void generateHuffmanCode(BinaryTreeNode **tree, DynamicArray *array);
-void freeHuffmanTree(BinaryTreeNode *tree);
-void printNode(BinaryTreeNode *root);
+DynamicArray buildHuffmanTree(const char *filePath);
+void freeBinaryTreeNodes(BinaryTreeNode *root);
+void finalCleanup(DynamicArray *array);
 
 #endif

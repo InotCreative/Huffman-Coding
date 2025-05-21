@@ -1,4 +1,5 @@
 #include "dynamic_array.h"
+#include "huffman.h"
 #include <stdlib.h>
 
 void initLetterNode(LetterNode *node, char letter) {
@@ -15,9 +16,13 @@ void growArray(DynamicArray *array) {
     }
 
     if (array->size + 1 > array->capacity) {
-        array->capacity *= 2;
-        array->nodeAddressArray = (void **)realloc(array->nodeAddressArray, array->capacity * sizeof(void *));
-        TEST(array->nodeAddressArray, NULL, "realloc");
+        size_t new_capacity = array->capacity * 2;
+        void **temp = (void **)realloc(array->nodeAddressArray, new_capacity * sizeof(void *));
+        TEST(temp, NULL, "realloc");
+        if (temp != NULL) {
+            array->nodeAddressArray = temp;
+            array->capacity = new_capacity;
+        }
     }
 }
 
@@ -35,14 +40,20 @@ void freeArray(DynamicArray *array) {
     free(array->nodeAddressArray);
 }
 
-void printArray(DynamicArray *array) {
-    for (int i = 0; i < array->size; i++) {
-        printf("ADDRESS: %p | CHARACTER: %c | COUNT: %ld\n", array->nodeAddressArray[i], ((LetterNode *)array->nodeAddressArray[i])->character, ((LetterNode *)array->nodeAddressArray[i])->quantityOfCharacters);
-    }
+void printArray(DynamicArray *array, int flag) {
+    if (flag == 0) {
+        for (int i = 0; i < array->size; i++) {
+            printf("ADDRESS: %p | CHARACTER: %c | COUNT: %ld\n", array->nodeAddressArray[i], ((LetterNode *)array->nodeAddressArray[i])->character, ((LetterNode *)array->nodeAddressArray[i])->quantityOfCharacters);
+        }
 
-    printf("SIZE: %ld\n", array->size);
-    printf("CAPACITY: %ld\n", array->capacity);
-    printf("\n");
+        printf("SIZE: %ld\n", array->size);
+        printf("CAPACITY: %ld\n", array->capacity);
+        printf("\n");
+    } else {
+        for (int i = 0; i < array->size; i++) {
+            printf("ADDRESS: %p\n", array->nodeAddressArray[i]);
+        }
+    }
 }
 
 void swap(void **a, void **b) {
@@ -51,14 +62,28 @@ void swap(void **a, void **b) {
     *b = temp;
 }
 
-int partition(DynamicArray *array, int low, int high) {
-    int pivot = ((LetterNode *)array->nodeAddressArray[high])->quantityOfCharacters;
+int partition(DynamicArray *array, int low, int high, int flag) {
+    int pivot;
+    
+    if (flag == 0) {
+        pivot = ((LetterNode *)array->nodeAddressArray[high])->quantityOfCharacters;
+    } else {
+        pivot = ((BinaryTreeNode *)array->nodeAddressArray[high])->node->quantityOfCharacters;
+    }
+
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
-        if (((LetterNode *)array->nodeAddressArray[j])->quantityOfCharacters <= pivot) {
-            i++;
-            swap(&array->nodeAddressArray[i], &array->nodeAddressArray[j]);
+        if (flag == 0) {
+            if (((LetterNode *)array->nodeAddressArray[j])->quantityOfCharacters <= pivot) {
+                i++;
+                swap(&array->nodeAddressArray[i], &array->nodeAddressArray[j]);
+            }
+        } else {
+            if (((BinaryTreeNode *)array->nodeAddressArray[j])->node->quantityOfCharacters <= pivot) {
+                i++;
+                swap(&array->nodeAddressArray[i], &array->nodeAddressArray[j]);
+            }
         }
     }
 
@@ -66,15 +91,15 @@ int partition(DynamicArray *array, int low, int high) {
     return i + 1;
 }
 
-void quickSort(DynamicArray *array, int low, int high) {
+void quickSort(DynamicArray *array, int low, int high, int flag) {
     if (low < high) {
-        int pi = partition(array, low, high);
-        quickSort(array, low, pi - 1);
-        quickSort(array, pi + 1, high);
+        int pi = partition(array, low, high, flag);
+        quickSort(array, low, pi - 1, flag);
+        quickSort(array, pi + 1, high, flag);
     }
 }
 
-LetterNode *pop(DynamicArray *array, int index) {
+void *pop(DynamicArray *array, int index) {
     if (index < 0 || index >= array->size) return NULL;
 
     void *toRemove = array->nodeAddressArray[index];
@@ -90,7 +115,7 @@ LetterNode *pop(DynamicArray *array, int index) {
 
 void initDynamicArray(DynamicArray *array) {
     array->size = 0;
-    array->capacity = 10;
+    array->capacity = 0;
     array->nodeAddressArray = NULL;
 
     array->printArray = printArray;

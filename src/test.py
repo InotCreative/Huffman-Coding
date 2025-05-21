@@ -1,89 +1,66 @@
-# Define a node for Huffman Tree
 class Node:
-    def __init__(self, char=None, count=0, left=None, right=None):
-        self.char = char       # Character (None if internal node)
-        self.count = count     # Frequency count
-        self.left = left       # Left child
-        self.right = right     # Right child
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
 
-def build_huffman_tree(char_counts):
-    # char_counts is a list of (char, count) tuples
+    def __repr__(self):
+        return f"Node({self.char}, {self.freq})"
 
-    # Step 1: Create a list of Nodes for each character
-    nodes = [Node(char=c, count=f) for c, f in char_counts]
+def build_huffman_tree(freq_map):
+    # Create initial list of nodes
+    nodes = [Node(char, freq) for char, freq in freq_map.items()]
+    
+    # Sort nodes by frequency
+    nodes.sort(key=lambda node: node.freq)
 
-    # Step 2: Sort nodes by count
-    nodes.sort(key=lambda node: node.count)
-
-    # Step 3: Repeat until one node remains
     while len(nodes) > 1:
-        # Take two nodes with smallest counts (front of list)
+        # Pick two nodes with smallest frequency
         left = nodes.pop(0)
         right = nodes.pop(0)
 
-        # Create a new internal node with combined count
-        merged = Node(char=None, count=left.count + right.count, left=left, right=right)
+        # Create a new internal node with these two as children
+        merged = Node(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
 
-        # Insert the new node back into the list to keep sorted order
-        # Find position to insert
-        inserted = False
-        for i in range(len(nodes)):
-            if nodes[i].count >= merged.count:
-                nodes.insert(i, merged)
-                inserted = True
-                break
-        if not inserted:
-            nodes.append(merged)
+        # Insert the new node back into the list and keep it sorted
+        nodes.append(merged)
+        nodes.sort(key=lambda node: node.freq)
 
-    # The last node is the root of Huffman tree
-    return nodes[0]
+    return nodes[0]  # Root of the tree
+
+def generate_codes(node, prefix="", code_map={}):
+    if node is None:
+        return
+    if node.char is not None:
+        code_map[node.char] = prefix
+    generate_codes(node.left, prefix + "0", code_map)
+    generate_codes(node.right, prefix + "1", code_map)
+    return code_map
 
 # Example usage:
-char_counts = [
-    ('L', 1), ('o', 29), ('r', 22), ('e', 37), ('m', 17), (' ', 65),
-    ('i', 42), ('p', 11), ('s', 18), ('u', 28), ('d', 18), ('l', 21),
-    ('t', 32), ('a', 29), (',', 4), ('c', 16), ('n', 24), ('g', 3),
-    ('b', 3), ('q', 5), ('.', 4), ('\n', 4), ('U', 1), ('v', 3), ('x', 3),
-    ('D', 1), ('h', 1), ('f', 3), ('E', 1)
-]
-
-root = build_huffman_tree(char_counts)
-
-def print_node(node):
-    if node is None:
-        print("Empty node")
-        return
+if __name__ == "__main__":
+    text = "huffman coding without heap"
     
-    if node.char is None:
-        print(f"Root node: Internal node with count = {node.count}")
-    else:
-        print(f"Root node: Leaf node with character = '{node.char}' and count = {node.count}")
+    # Build frequency map
+    freq_map = {}
+    for char in text:
+        freq_map[char] = freq_map.get(char, 0) + 1
 
-print_node(root)
-'''
-# Assuming 'root' is the tree root from the previous code:
-def generate_codes(node, prefix="", codebook=None):
-    if codebook is None:
-        codebook = {}
+    # Build Huffman tree
+    root = build_huffman_tree(freq_map)
 
-    if node.char is not None:
-        # Leaf node: assign the prefix as the code for this character
-        codebook[node.char] = prefix
-    else:
-        # Internal node: recurse left and right with updated prefix
-        if node.left:
-            generate_codes(node.left, prefix + "0", codebook)
-        if node.right:
-            generate_codes(node.right, prefix + "1", codebook)
-    return codebook
+    # Generate Huffman codes
+    codes = generate_codes(root)
 
-# Using your Huffman tree root:
-codes = generate_codes(root)
-
-# Print the codes
-for char, code in codes.items():
-    if char == " ":
-        print(f"'space': {code}")
-    else:
+    # Print the codes
+    print("Huffman Codes:")
+    for char, code in codes.items():
         print(f"'{char}': {code}")
-'''
+
+    # Encode the text
+    encoded = ''.join(codes[char] for char in text)
+    print("\nEncoded text:")
+    print(encoded)

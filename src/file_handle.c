@@ -1,7 +1,7 @@
 #include "file_handle.h"
 
 void countFileCharacters(DynamicArray *array, const char *filePath) {
-    FILE *inputFile = fopen("test.txt", "r+");
+    FILE *inputFile = fopen(filePath, "r+");
     TEST(inputFile, NULL, "fopen");
 
     LetterNode *letter = NULL;
@@ -9,7 +9,7 @@ void countFileCharacters(DynamicArray *array, const char *filePath) {
 
     while ((fileCharacter = fgetc(inputFile)) != EOF) {
         if (array->size == 0) {
-            LetterNode *letter = (LetterNode *)malloc(sizeof(LetterNode));
+            letter = (LetterNode *)malloc(sizeof(LetterNode));
             TEST(letter, NULL, "malloc");
             initLetterNode(letter, fileCharacter);
             
