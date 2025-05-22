@@ -10,19 +10,19 @@ void initLetterNode(LetterNode *node, char letter) {
 void growArray(DynamicArray *array) {
     if (array->size == 0) {
         array->capacity = INITIAL_SIZE;
-        array->nodeAddressArray = (void **)malloc(INITIAL_SIZE * sizeof(void *));
+        array->nodeAddressArray = malloc(INITIAL_SIZE * sizeof(void *));
         TEST(array->nodeAddressArray, NULL, "malloc");
         return;
     }
 
     if (array->size + 1 > array->capacity) {
         size_t new_capacity = array->capacity * 2;
-        void **temp = (void **)realloc(array->nodeAddressArray, new_capacity * sizeof(void *));
+        void **temp = realloc(array->nodeAddressArray, new_capacity * sizeof(void *));
         TEST(temp, NULL, "realloc");
-        if (temp != NULL) {
-            array->nodeAddressArray = temp;
-            array->capacity = new_capacity;
-        }
+
+        if (temp == NULL) return;
+        array->nodeAddressArray = temp;
+        array->capacity = new_capacity;
     }
 }
 
@@ -34,7 +34,9 @@ void push(DynamicArray *array, void *address) {
 
 void freeArray(DynamicArray *array) {
     for (int i = 0; i < array->size; i++) {
-        free(array->nodeAddressArray[i]);
+        if (array->nodeAddressArray[i] != NULL) {
+            free(array->nodeAddressArray[i]);
+        }
     }
 
     free(array->nodeAddressArray);
